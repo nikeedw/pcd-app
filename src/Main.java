@@ -36,22 +36,47 @@ public class Main {
     }
 
     private static ConversionData handleCurrencyConversion(Scanner scanner, List<String> currencyList) {
-        System.out.println("Доступные валюты:");
-        for (int i = 0; i < currencyList.size(); i++) {
-            System.out.println((i + 1) + ". " + currencyList.get(i));
-        }
-
-        System.out.println("Выберите исходную валюту (введите номер):");
-        String fromCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
-
-        System.out.println("Введите сумму для конвертации:");
-        double amount = scanner.nextDouble();
-
-        System.out.println("Выберите целевую валюту (введите номер):");
-        String toCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
-
-        return new ConversionData(fromCurrency, toCurrency, amount);
+    System.out.println("Доступные валюты:");
+    for (int i = 0; i < currencyList.size(); i++) {
+        System.out.println((i + 1) + ". " + currencyList.get(i));
     }
+
+    System.out.println("Выберите исходную валюту (введите номер):");
+    String fromCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
+
+    double amount = 0;
+    boolean validInput = false; // flag
+
+    while (!validInput) {
+        System.out.println("Введите сумму для конвертации:");
+        if (scanner.hasNextDouble()) { // NaN handle
+            amount = scanner.nextDouble();
+            if (amount > 0) { // negative number handle
+                validInput = true;
+            } else {
+                System.err.println("Ошибка: сумма должна быть положительным числом. Попробуйте снова.");
+            }
+        } else {
+            System.err.println("Ошибка: введите число. Попробуйте снова.");
+            scanner.next(); // buffer cleanup
+        }
+    }
+
+    String toCurrency;
+    while (true) {
+        System.out.println("Выберите целевую валюту:");
+        toCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
+        
+        if (!fromCurrency.equals(toCurrency)) {
+            break;
+        } else {
+            System.err.println("Ошибка: исходная и целевая валюты не могут совпадать. Попробуйте снова.");
+        }
+    }
+
+    return new ConversionData(fromCurrency, toCurrency, amount);
+}
+
 
     private static int getChoice(Scanner scanner, int max) {
         int choice;
