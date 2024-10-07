@@ -41,17 +41,42 @@ public class Main {
             System.out.println((i + 1) + ". " + currencyList.get(i));
         }
 
-        System.out.println("Выберите исходную валюту (введите номер):");
+        System.out.println("Выберите исходную валюту:");
         String fromCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
 
-        System.out.println("Введите сумму для конвертации:");
-        double amount = scanner.nextDouble();
+        double amount = 0;
+        boolean validInput = false; // flag
 
-        System.out.println("Выберите целевую валюту (введите номер):");
-        String toCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
+        while (!validInput) {
+            System.out.println("Введите сумму для конвертации:");
+            if (scanner.hasNextDouble()) { // prevents string input
+                amount = scanner.nextDouble();
+                if (amount > 0) { // prevents negative numbers input
+                    validInput = true;
+                } else {
+                    System.err.println("Ошибка: сумма должна быть положительным числом. Попробуйте снова.");
+                }
+            } else {
+                System.err.println("Ошибка: введите число. Попробуйте снова.");
+                scanner.next(); // buffer cleanup
+            }
+        }
+
+        String toCurrency;
+        while (true) {
+            System.out.println("Выберите целевую валюту (введите номер):");
+            toCurrency = currencyList.get(getChoice(scanner, currencyList.size()) - 1);
+
+            if (!fromCurrency.equals(toCurrency)) {
+                break;
+            } else {
+                System.err.println("Ошибка: исходная и целевая валюты не могут совпадать. Попробуйте снова.");
+            }
+        }
 
         return new ConversionData(fromCurrency, toCurrency, amount);
     }
+
 
     private static int getChoice(Scanner scanner, int max) {
         int choice;
@@ -61,7 +86,6 @@ public class Main {
         return choice;
     }
 
-    // Something like type in ts to store response
     private static class ConversionData {
         String fromCurrency;
         String toCurrency;
@@ -74,4 +98,3 @@ public class Main {
         }
     }
 }
-
